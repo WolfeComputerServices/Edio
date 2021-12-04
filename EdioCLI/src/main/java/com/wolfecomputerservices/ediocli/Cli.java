@@ -15,7 +15,7 @@ import com.wolfecomputerservices.edioapi.Edio;
 public class Cli {
     public static void main(String[] args) {
         if (args.length == 0)
-            System.out.println("A configuration file parameter was not specified");
+            System.out.println("A configuration file was not specified");
         else
             new Edio().cliRun(args);
     }
