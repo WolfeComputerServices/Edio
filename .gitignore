@@ -13,3 +13,5 @@ EdioAPIWeb/target/maven-status/*
 EdioAPI/target/maven-archiver/*
 EdioCLI/target/maven-archiver/*
 EdioAPIWeb/target/maven-archiver/*
+
+EdioAPIWeb/target/EdioAPIWeb*/data/
