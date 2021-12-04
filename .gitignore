@@ -1,11 +1,15 @@
-EdioAPI/target/classes/
-EdioCLI/target/classes/
-EdioAPIWeb/target/classes/
+EdioAPI/target/classes/*
+EdioCLI/target/classes/*
+EdioAPIWeb/target/classes/*
 
-EdioAPI/target/test-classes/
-EdioCLI/target/test-classes/
-EdioAPIWeb/target/test-classes/
+EdioAPI/target/test-classes/*
+EdioCLI/target/test-classes/*
+EdioAPIWeb/target/test-classes/*
 
-EdioAPI/target/maven-status/
-EdioCLI/target/maven-status/
-EdioAPIWeb/target/maven-status/
+EdioAPI/target/maven-status/*
+EdioCLI/target/maven-status/*
+EdioAPIWeb/target/maven-status/*
+
+EdioAPI/target/maven-archiver/*
+EdioCLI/target/maven-archiver/*
+EdioAPIWeb/target/maven-archiver/*
