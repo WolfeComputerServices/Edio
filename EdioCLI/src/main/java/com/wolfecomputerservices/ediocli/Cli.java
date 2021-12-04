@@ -15,7 +15,7 @@ import com.wolfecomputerservices.edioapi.Edio;
 public class Cli {
     public static void main(String[] args) {
         if (args.length == 0)
-            System.out.println("A configuration file must be specified");
+            System.out.println("A configuration file must be specified.");
         else
             new Edio().cliRun(args);
     }
