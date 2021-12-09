@@ -92,7 +92,7 @@ public class SetupServlet extends HttpServlet {
                 }
                 
                 RequestDispatcher dispatcher = getServletContext()
-                    .getRequestDispatcher("/EdioAPIWeb/Edio?refresh");
+                    .getRequestDispatcher("/Edio?refresh");
                 dispatcher.forward(request, response);
             }
         }
