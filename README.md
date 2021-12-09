@@ -97,3 +97,7 @@ If using the cli, the output is a JSON string similiar to the following:
   "errors":[]
 }
 ```
+
+Ideas for future enhancement:
+
+  + Add ability to propigate to Google gmail (and possibly others). The work is started as it generats iCal format for events already.
