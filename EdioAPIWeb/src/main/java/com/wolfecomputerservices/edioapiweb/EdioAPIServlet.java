@@ -59,7 +59,7 @@ public class EdioAPIServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             if (request.getQueryString() != null && request.getQueryString().equals("refresh")) {
                 jsonConfig = null;
-                response.sendRedirect("/EdioAPIWeb/index.html");
+                response.sendRedirect("index.html");
                 return;
             }
         
