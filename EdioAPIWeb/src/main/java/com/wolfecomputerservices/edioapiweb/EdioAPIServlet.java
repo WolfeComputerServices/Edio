@@ -53,7 +53,7 @@ public class EdioAPIServlet extends HttpServlet {
         JSONArray outErrors = new JSONArray();
 
         response.setContentType("application/json;charset=utf-8");
-        response.setHeader("Access-Control-Allow-Origin", "*");
+        //response.setHeader("Access-Control-Allow-Origin", "*");
         ServletContext context = getServletContext();
 
         try (PrintWriter out = response.getWriter()) {
