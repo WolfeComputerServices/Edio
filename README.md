@@ -23,7 +23,8 @@ Items retrieve:
   + events: items like field trips, not classes.
  
 The config file's contents are as follows:
-'''json
+
+'''yaml
   {
     "output":{
       "overdue":true,   /* true to retrieve overdue items, false otherwise */
@@ -48,8 +49,10 @@ The config file's contents are as follows:
     }
   }
 '''
+
 If using the cli, the output is a JSON string similiar to the following:
-'''json
+
+'''yaml
   {
     "school":true,
     "children":[
