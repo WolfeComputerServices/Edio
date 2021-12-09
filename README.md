@@ -23,7 +23,7 @@ Items retrieve:
   + events: items like field trips, not classes.
  
 The config file's contents are as follows:
-
+'''json
   {
     "output":{
       "overdue":true,   /* true to retrieve overdue items, false otherwise */
@@ -47,9 +47,9 @@ The config file's contents are as follows:
       }
     }
   }
-  
+'''
 If using the cli, the output is a JSON string similiar to the following:
-
+'''json
   {
     "school":true,
     "children":[
@@ -93,3 +93,4 @@ If using the cli, the output is a JSON string similiar to the following:
     ],
   "errors":[]
 }
+'''
