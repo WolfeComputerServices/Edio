@@ -24,7 +24,7 @@ Items retrieve:
  
 The config file's contents are as follows:
 
-'''yaml
+```json
   {
     "output":{
       "overdue":true,   /* true to retrieve overdue items, false otherwise */
@@ -48,11 +48,11 @@ The config file's contents are as follows:
       }
     }
   }
-'''
+```
 
 If using the cli, the output is a JSON string similiar to the following:
 
-'''yaml
+```json
   {
     "school":true,
     "children":[
@@ -96,4 +96,4 @@ If using the cli, the output is a JSON string similiar to the following:
     ],
   "errors":[]
 }
-'''
+```
