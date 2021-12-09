@@ -42,8 +42,8 @@ The config file's contents are as follows:
     },
     "edio":{
       "credentials":{ /* credentials used to log into the edio system as assigned by CCA */
-        "pass":"",    /* coache's password */
-        "user":""     /* coache's userid */
+        "pass":"",    /* coach's password */
+        "user":""     /* coach's userid */
       }
     }
   }
