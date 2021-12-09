@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.activation.DataHandler;
 import org.json.JSONArray;
@@ -36,6 +38,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.util.StringUtils;
 
 /**
  *
@@ -573,10 +576,9 @@ public class EdioAPI {
 
     public List<Upcoming> getUpComing(final int studentId, final int numberOfDaysAhead)
             throws IOException, InterruptedException {
-        final List<String> keyWords = Collections.unmodifiableList(
-                new ArrayList<>(Arrays.asList(
-                        "quiz", "test", "due"
-                )));
+        final String[] keyWords = {
+            "quiz", "test", "due"
+        };
         final String kinds = "3";
         ArrayList<Upcoming> values = new ArrayList<>();
 
@@ -618,17 +620,20 @@ public class EdioAPI {
             switch (lastResponse.statusCode()) {
                 case 200:
                     JSONArray courses = new JSONObject(lastResponse.body()).getJSONArray("resultObject");
+                    final String patternString = "\\b(" 
+                            + StringUtils.arrayToDelimitedString(keyWords, "|")
+                            + ")\\b";
+
+                    Pattern pattern = Pattern.compile(patternString);
                     for (int i = 0; i < courses.length(); ++i) {
                         JSONObject course = courses.getJSONObject(i);
                         final JSONObject day = course.getJSONObject("day");
                         final String topic = day.getString("name");
                         final String name = day.getJSONObject("course").getString("name");
-                        keyWords.stream()
-                            .forEach((keyword) -> {
-                                if (topic.toLowerCase().contains(keyword)) {
-                                    values.add(new Upcoming(day.getString("scheduledDate"), name, topic));
-                                }
-                            });
+                        
+                        Matcher matcher = pattern.matcher(topic.toLowerCase());
+                        if (matcher.find())
+                            values.add(new Upcoming(day.getString("scheduledDate"), name, topic));
                     }
                     
                     add(getDayEvents(studentId, startTime.toLocalDate(), kinds), values);
