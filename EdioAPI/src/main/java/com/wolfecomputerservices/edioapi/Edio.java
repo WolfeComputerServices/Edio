@@ -157,8 +157,17 @@ public class Edio {
             JSONObject jsonChild = new JSONObject();
             jsonChild.put("name", toCamelCase(childName))
                     .put("id", children.get(childName));
-            if (doOutput("overdue"))
-                jsonChild.put("overdue", edioAPI.hasOverdues(children.get(childName)));
+            if (doOutput("overdue")) {
+                jsonChild.put("overdues", 
+                        edioAPI.overdues(children.get(childName))
+                        .parallelStream()
+                        .map((u) -> new JSONObject()
+                            .put("dueDate", u.dateStart)
+                            .put("course", u.eventName)
+                            .put("assignment", u.eventDescription))
+                        .collect(Collectors.toList())
+                );
+            }
             
             if (doOutput("upcoming")) {
                 JSONObject upcoming_parms = cfgOutput.getJSONObject("upcoming_parms");

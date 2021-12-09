@@ -36,13 +36,14 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import org.springframework.mail.javamail.JavaMailSender;
+
 /**
  *
- * @author Ed Wolfe
- * Copyright (C) 2021 Wolfe Computer Services
- * 
+ * @author Ed Wolfe Copyright (C) 2021 Wolfe Computer Services
+ *
  */
 public class EdioAPI {
+
     /*  Event Kinds
         --------------------------
         0
@@ -52,24 +53,25 @@ public class EdioAPI {
         7
         9       Holiday
         
-    */
+     */
     public EdioAPI(final String userId, final String userPass) {
         this.userId = userId;
         this.userPass = userPass;
     }
-    
+
     public boolean connect() {
         return authentication(Authentication.logon);
     }
+
     public boolean disconnect() {
         return authentication(Authentication.logoff);
     }
-    
+
     //private final String iCalDateFormat = "yyyMMdd HHmmss";
     private final short maxRetries = 3;
     private short retries = 0;
-    private final String UserAgent = 
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    private final String UserAgent
+            = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
             + "(KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 Edg/95.0.1020.44";
     private final String sec_ch_ua = "\"Microsoft Edge\";v=\"95\", "
             + "\"Chromium\";v=\"95\", \";Not A Brand\";v=\"99\"";
@@ -86,31 +88,33 @@ public class EdioAPI {
     private final String appJson = "application/json";
     private final String refererDashboard = "https://www.myedio.com/dashboard/";
     private final String refererLogon = "https://www.myedio.com/login/";
-    
+    private final String refererDay = "https://www.myedio.com/calendar/day/";
+
     private final String userId;
     private final String userPass;
     private String cookies = null;
     private HttpResponse<String> lastResponse;
-    
+
     private JSONObject accountUser = null;
 
     private enum Authentication {
         logon,
         logoff
     }
-    
+
     public class Event {
+
         public final int id;
         public final String dateCreated;
         public final String dateStart;
         public final String dateEnd;
         public final String eventName;
         public final String eventDescription;
-        
+
         private final String ICAL_FORMAT = "yyyyMMdd HHmmss";
-        
-        public Event(final int Id, final String CreatedDate, 
-                final String StartDate, final String EndDate, 
+
+        public Event(final int Id, final String CreatedDate,
+                final String StartDate, final String EndDate,
                 final String EventName, final String EventDescription) {
             id = Id;
             dateCreated = CreatedDate;
@@ -119,7 +123,7 @@ public class EdioAPI {
             eventName = EventName;
             eventDescription = EventDescription;
         }
-        
+
         public String formatDateAs(final String date, final String format) {
             return ZonedDateTime
                     .parse(date)
@@ -129,7 +133,7 @@ public class EdioAPI {
         public String formatDateAsiCal(final String date) {
             return formatDateAs(date, ICAL_FORMAT)
                     .replace(" ", "T");
-                    //+ "Z";
+            //+ "Z";
         }
 
         public String formatDateAsISO8601(final String date) {
@@ -137,26 +141,29 @@ public class EdioAPI {
                     .parse(date)
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                     .replace(" ", "T");
-                    //+"Z";
+            //+"Z";
         }
+
         public String formatDateAs(final String date, final DateTimeFormatter dtfFormat) {
             return ZonedDateTime
                     .parse(date)
                     .format(dtfFormat);
         }
     }
+
     public class UpComing {
+
         public final String date;
         public final String course;
         public final String topic;
-        
+
         public UpComing(final String Date, final String Course, final String Topic) {
             date = Date;
             course = Course;
             topic = Topic;
         }
     }
-    
+
     private boolean connectIfNeeded() {
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
@@ -185,7 +192,7 @@ public class EdioAPI {
                 authentication(Authentication.logon);
                 break;
         }
-        
+
         switch (lastResponse.statusCode()) {
             case 200:
             case 404:
@@ -194,27 +201,30 @@ public class EdioAPI {
                 return false;
         }
     }
+
     private boolean authentication(Authentication type) {
         retries++;
         HttpRequest.Builder builder;
         if (null == type) {
             return false;
-        } else switch (type) {
-            case logon:
-                String json = new StringBuilder()
-                        .append("{")
-                        .append(String.format("\"password\": \"%s\",", userPass))
-                        .append(String.format("\"username\": \"%s\"", userId))
-                        .append("}").toString();
-                builder = HttpRequest.newBuilder()
-                        .POST(HttpRequest.BodyPublishers.ofString(json));
-                break;
-            case logoff:
-                builder = HttpRequest.newBuilder()
-                        .DELETE();
-                break;
-            default:
-                return false;
+        } else {
+            switch (type) {
+                case logon:
+                    String json = new StringBuilder()
+                            .append("{")
+                            .append(String.format("\"password\": \"%s\",", userPass))
+                            .append(String.format("\"username\": \"%s\"", userId))
+                            .append("}").toString();
+                    builder = HttpRequest.newBuilder()
+                            .POST(HttpRequest.BodyPublishers.ofString(json));
+                    break;
+                case logoff:
+                    builder = HttpRequest.newBuilder()
+                            .DELETE();
+                    break;
+                default:
+                    return false;
+            }
         }
         HttpRequest request = builder
                 .uri(URI.create("https://www.myedio.com/api/v1/authentication/"))
@@ -236,23 +246,25 @@ public class EdioAPI {
             Logger.getLogger(EdioAPI.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-        if (lastResponse.statusCode() != 200)
+        if (lastResponse.statusCode() != 200) {
             return false;
+        }
 
         retries = 0;
         cookies = lastResponse.headers().map().get("set-cookie").toString();
         accountUser = new JSONObject(lastResponse.body()).getJSONObject("resultObject");
-        
+
         return true;
     }
-    
+
     private int getAccountUserId() {
         return accountUser.getInt("id");
     }
+
     private String getAccountEmail() {
         return accountUser.getString("email");
     }
-    
+
     public HashMap<String, Integer> getChildren() {
         HashMap<String, Integer> values = new HashMap<>();
         if (connectIfNeeded()) {
@@ -285,11 +297,12 @@ public class EdioAPI {
                     JSONArray relationships = new JSONObject(lastResponse.body())
                             .getJSONObject("resultObject")
                             .getJSONArray("primaryUserRoleRelationships");
-                    for (int i=0;i < relationships.length();++i) {
+                    for (int i = 0; i < relationships.length(); ++i) {
                         JSONObject relationship = relationships.getJSONObject(i).getJSONObject("secondaryUser");
                         values.put(relationship.getString("firstName"),
-                             relationship.getInt("id"));
-                    };
+                                relationship.getInt("id"));
+                    }
+                    ;
                     break;
                 default:
                     Logger.getLogger(EdioAPI.class.getName()).log(Level.SEVERE, null, "HTTP Code: " + lastResponse.statusCode());
@@ -298,17 +311,17 @@ public class EdioAPI {
         }
         return values;
     }
-    
-    public boolean hasOverdues(final int studentId) {
+
+    public List<Event> overdues(final int studentId) {
         if (connectIfNeeded()) {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
                     .uri(URI.create(String.format(
-                            "https://www.myedio.com/api/v1/days/users/progress?userIds=%d",
+                            "https://www.myedio.com/api/v1/calendars/dayusers/overdue?userId=%d",
                             studentId)))
                     .header("Content-type", appJson)
                     .setHeader("authority", authority)
-                    .setHeader("referer", refererDashboard)
+                    .setHeader("referer", refererDay)
                     .setHeader("sec-ch-ua", sec_ch_ua)
                     .setHeader("sec-ch_ua-mobile", sec_ch_ua_mobile)
                     .setHeader("sec-ch-ua-platform", sec_ch_ua_platform)
@@ -320,31 +333,40 @@ public class EdioAPI {
                     .build();
             try {
                 lastResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (lastResponse.statusCode() != 200)
-                    return false;
+                if (lastResponse.statusCode() != 200) {
+                    return new ArrayList<>(0);
+                }
             } catch (IOException | InterruptedException ex) {
                 Logger.getLogger(EdioAPI.class.getName()).log(Level.SEVERE, null, ex);
-                return false;
+                return new ArrayList<>(0);
             }
 
-            if (lastResponse.statusCode() == 200) {
-                JSONArray courses = new JSONObject(lastResponse.body()).getJSONArray("resultObject");
-                for (int i=0;i < courses.length();++i) {
-                    JSONObject course = courses.getJSONObject(i);
-                    if (course.getInt("studentOverdue") > 0)
-                        return true;
-                };
-            } else if (lastResponse.statusCode() == 401) {
-                if (retries < maxRetries) {
-                    authentication(Authentication.logon);
-                    return hasOverdues(studentId);
-                }
+            switch (lastResponse.statusCode()) {
+                case 200:
+                    List<Event> values = new ArrayList<>();
+                    JSONArray overdues = new JSONObject(lastResponse.body()).getJSONArray("resultObject");
+                    for (int i=0;i<overdues.length();i++) {
+                        JSONObject overdue = overdues.getJSONObject(i);
+                        values.add(new Event(overdue.getInt("id"),
+                                overdue.getString("createdOn"),
+                                overdue.getString("scheduledDate"),
+                                null,//day.getString("updatedOn"),
+                                overdue.getJSONObject("day").getJSONObject("course").getString("name"),
+                                overdue.getJSONObject("day").getString("name")));
+                    }
+                    return values;
+                case 401:
+                    if (retries < maxRetries) {
+                        authentication(Authentication.logon);
+                    }
+                    break;
             }
         }
-        return false;
+
+        return new ArrayList<>(0);
     }
-    
-    public boolean hasSchool(final int studentId, LocalDateTime dateTime) 
+
+    public boolean hasSchool(final int studentId, LocalDateTime dateTime)
             throws IOException, InterruptedException {
         switch (dateTime.getDayOfWeek()) {
             case SATURDAY:
@@ -364,8 +386,8 @@ public class EdioAPI {
                     .GET()
                     .uri(URI.create(String.format(
                             "https://www.myedio.com/api/v1/events?"
-                                    + "endDate=%s&eventKinds=1,4,7,9,0,3&"
-                                    + "includeType=true&startDate=%s&userIds=%d",
+                            + "endDate=%s&eventKinds=1,4,7,9,0,3&"
+                            + "includeType=true&startDate=%s&userIds=%d",
                             endTime.format(DateTimeFormatter.ISO_INSTANT),
                             startTime.format(DateTimeFormatter.ISO_INSTANT),
                             studentId)))
@@ -386,22 +408,24 @@ public class EdioAPI {
             switch (lastResponse.statusCode()) {
                 case 200:
                     JSONArray events = new JSONObject(lastResponse.body()).getJSONArray("resultObject");
-                    for (int i=0;i < events.length();++i) {
+                    for (int i = 0; i < events.length(); ++i) {
                         JSONObject event = events.getJSONObject(i);
-                        if (event.getString("description").toLowerCase().contains("no school "))
+                        if (event.getString("description").toLowerCase().contains("no school ")) {
                             return false;
-                    };
+                        }
+                    }
+                    ;
                     break;
                 default:
                     throw new IOException("HTTP Code: " + lastResponse.statusCode());
             }
-        }        
-        
+        }
+
         return true;
     }
-    
+
     @Deprecated
-    public List<Event> getTodaysEvents(final int studentId) 
+    public List<Event> getTodaysEvents(final int studentId)
             throws IOException, InterruptedException {
         try {
             return getDayEvents(studentId, LocalDate.now());
@@ -410,22 +434,22 @@ public class EdioAPI {
             return null;
         }
     }
-    
-    public List<Event> getDayEvents(final int studentId, LocalDate date) 
+
+    public List<Event> getDayEvents(final int studentId, LocalDate date)
             throws IOException, InterruptedException {
         ArrayList<Event> values = new ArrayList();
         final ZonedDateTime startTime = date.atStartOfDay()
                 .atZone(ZoneId.systemDefault())
                 .withZoneSameInstant(ZoneId.of("UTC"));
         final ZonedDateTime endTime = startTime.plusDays(1).minusSeconds(1);
-        
+
         if (connectIfNeeded()) {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
                     .uri(URI.create(String.format(
                             "https://www.myedio.com/api/v1/events?"
-                                    + "endDate=%s&eventKinds=1,4,7,9,0,3&"
-                                    + "includeType=true&startDate=%s&userIds=%d",
+                            + "endDate=%s&eventKinds=1,4,7,9,0,3&"
+                            + "includeType=true&startDate=%s&userIds=%d",
                             endTime.format(DateTimeFormatter.ISO_INSTANT),
                             startTime.format(DateTimeFormatter.ISO_INSTANT),
                             studentId)))
@@ -446,7 +470,7 @@ public class EdioAPI {
             switch (lastResponse.statusCode()) {
                 case 200:
                     JSONArray events = new JSONObject(lastResponse.body()).getJSONArray("resultObject");
-                    for (int i=0;i < events.length();++i) {
+                    for (int i = 0; i < events.length(); ++i) {
                         JSONObject event = events.getJSONObject(i);
                         values.add(new Event(event.getInt("id"),
                                 event.getString("createdOn"),
@@ -454,13 +478,14 @@ public class EdioAPI {
                                 event.getString("endsOn"),
                                 event.getString("name"),
                                 event.getString("description")));
-                    };
+                    }
+                    ;
                     break;
                 default:
                     throw new IOException("HTTP Code: " + lastResponse.statusCode());
             }
-        }        
-        
+        }
+
         return values;
     }
 
@@ -474,42 +499,42 @@ public class EdioAPI {
             rValue.append(line.substring(index, Math.min(index + 75, line.length())));
             index += 75;
         }
-            
+
         return rValue.toString() + "\n";
     }
-    public int mailCalenderEvents(final int StudentId, JavaMailSender mailSender, 
-            final String fromEmail, final String toEmail, final LocalDate dt) 
+
+    public int mailCalenderEvents(final int StudentId, JavaMailSender mailSender,
+            final String fromEmail, final String toEmail, final LocalDate dt)
             throws MessagingException {
         int count = 0;
         try {
             List<Event> events = null;
             events = getDayEvents(StudentId, dt);
-            
-            for (int i=0;i<events.size();++i) {
+
+            for (int i = 0; i < events.size(); ++i) {
                 count++;
                 Event event = events.get(i);
 
                 StringBuilder ics = new StringBuilder();
                 ics.append(fmtiCalContentLine("BEGIN:VCALENDAR"))
-                    .append(fmtiCalContentLine("METHOD:REQUEST"))
-                    .append(fmtiCalContentLine("PRODID:-//Wolfe Computer Services/Edio API//EN"))
-                    .append(fmtiCalContentLine("VERSION:2.0"));
-                      
+                        .append(fmtiCalContentLine("METHOD:REQUEST"))
+                        .append(fmtiCalContentLine("PRODID:-//Wolfe Computer Services/Edio API//EN"))
+                        .append(fmtiCalContentLine("VERSION:2.0"));
 
                 ics.append(fmtiCalContentLine("BEGIN:VEVENT"))
-                    .append(fmtiCalContentLine(String.format("DESCRIPTION;LANGUAGE=en-US:%s",event.eventDescription)))
-                    .append(fmtiCalContentLine(String.format("SUMMARY;LANGUAGE=en-US:%s", event.eventName)))
-                    .append(fmtiCalContentLine(String.format("DTSTAMP:%s", event.formatDateAsiCal(event.dateCreated))))
-                    .append(fmtiCalContentLine(String.format("ORGANIZER;CN=Commonwealth Charter Academy:mailto:%s", getAccountEmail())))
-                    .append(fmtiCalContentLine(String.format("ATTENDEE;PARTSTAT=ACCEPTED;CN=Student:EMAIL=%s:MAILTO:%s",toEmail,toEmail)))
-                    .append(fmtiCalContentLine(String.format("DTSTART:%s", event.formatDateAsiCal(event.dateStart))))
-                    .append(fmtiCalContentLine(String.format("DTEND:%s", event.formatDateAsiCal(event.dateEnd))))
-                    .append(fmtiCalContentLine(String.format("UID:edio-%d", event.id)))
-                    .append(fmtiCalContentLine("STATUS:CONFIRMED"))
-                    .append(fmtiCalContentLine("END:VEVENT"));
-                
+                        .append(fmtiCalContentLine(String.format("DESCRIPTION;LANGUAGE=en-US:%s", event.eventDescription)))
+                        .append(fmtiCalContentLine(String.format("SUMMARY;LANGUAGE=en-US:%s", event.eventName)))
+                        .append(fmtiCalContentLine(String.format("DTSTAMP:%s", event.formatDateAsiCal(event.dateCreated))))
+                        .append(fmtiCalContentLine(String.format("ORGANIZER;CN=Commonwealth Charter Academy:mailto:%s", getAccountEmail())))
+                        .append(fmtiCalContentLine(String.format("ATTENDEE;PARTSTAT=ACCEPTED;CN=Student:EMAIL=%s:MAILTO:%s", toEmail, toEmail)))
+                        .append(fmtiCalContentLine(String.format("DTSTART:%s", event.formatDateAsiCal(event.dateStart))))
+                        .append(fmtiCalContentLine(String.format("DTEND:%s", event.formatDateAsiCal(event.dateEnd))))
+                        .append(fmtiCalContentLine(String.format("UID:edio-%d", event.id)))
+                        .append(fmtiCalContentLine("STATUS:CONFIRMED"))
+                        .append(fmtiCalContentLine("END:VEVENT"));
+
                 ics.append(fmtiCalContentLine("END:VCALENDAR"));
-        
+
                 if (count > 0) {
                     Message msg = mailSender.createMimeMessage();
                     MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -541,34 +566,34 @@ public class EdioAPI {
         } catch (InterruptedException | IOException ex) {
             Logger.getLogger(EdioAPI.class.getName()).log(Level.SEVERE, null, ex);
         }
-       return count;
+        return count;
     }
-    
-    public List<UpComing> getUpComing(final int studentId, final int numberOfDaysAhead) 
+
+    public List<UpComing> getUpComing(final int studentId, final int numberOfDaysAhead)
             throws IOException, InterruptedException {
         final List<String> keyWords = Collections.unmodifiableList(
-            new ArrayList<>(Arrays.asList(
-                    "Quiz", "Test", "Due"
-            )));
+                new ArrayList<>(Arrays.asList(
+                        "Quiz", "Test", "Due"
+                )));
         ArrayList<UpComing> values = new ArrayList<>();
-        
+
         final ZonedDateTime startTime = LocalDateTime.now()
                 .atZone(ZoneId.systemDefault())
                 .withHour(0)
                 .withMinute(0)
                 .withSecond(0)
                 .withZoneSameInstant(ZoneId.of("UTC"));
-        
-        final ZonedDateTime endTime = startTime.plusDays(numberOfDaysAhead+1);
+
+        final ZonedDateTime endTime = startTime.plusDays(numberOfDaysAhead + 1);
 
         if (connectIfNeeded()) {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
                     .uri(URI.create(String.format(
                             "https://www.myedio.com/api/v1/calendars/dayusers?"
-                                    + "endDate=%s&"
-                                    + "startDate=%s&"
-                                    + "userId=%d",
+                            + "endDate=%s&"
+                            + "startDate=%s&"
+                            + "userId=%d",
                             endTime.format(DateTimeFormatter.ISO_INSTANT),
                             startTime.format(DateTimeFormatter.ISO_INSTANT),
                             studentId)))
@@ -590,24 +615,28 @@ public class EdioAPI {
             switch (lastResponse.statusCode()) {
                 case 200:
                     JSONArray courses = new JSONObject(lastResponse.body()).getJSONArray("resultObject");
-                    for (int i=0;i < courses.length();++i) {
+                    for (int i = 0; i < courses.length(); ++i) {
                         JSONObject course = courses.getJSONObject(i);
                         final JSONObject day = course.getJSONObject("day");
                         final String topic = day.getString("name");
                         final String name = day.getJSONObject("course").getString("name");
                         keyWords.parallelStream()
                                 .forEach((key_word) -> {
-                                    if (topic.toLowerCase().contains(key_word.toLowerCase()))
+                                    if (topic.toLowerCase().contains(key_word.toLowerCase())) {
                                         values.add(new UpComing(day.getString("scheduledDate"), name, topic));
+                                    }
                                 });
-                    }   ;
+                    }
+                    ;
                     break;
                 case 401:
                     if (retries < maxRetries) {
                         authentication(Authentication.logon);
-                        if (lastResponse.statusCode() == 200)
+                        if (lastResponse.statusCode() == 200) {
                             return getUpComing(studentId, numberOfDaysAhead);
-                    }   break;
+                        }
+                    }
+                    break;
                 default:
                     throw new IOException("HTTP Code: " + lastResponse.statusCode());
             }
