@@ -21,13 +21,13 @@
                     $.each(data.children, function(index, child) {
                         document.write(child.name + "<blockquote>");
                         if (child.overdue)
-                           document.write("<div class='background-color: red;color:black;'>OVERDUES</div><br/>")
+                           document.write("<div style='background-color: red;color:black;'>OVERDUES</div><br/>");
                         $.each(child.upcoming, function(index, upcoming) {
                             document.write(upcoming.date.substring(0,10)+": "+
                                     upcoming.course+"-<b>"+
                                     upcoming.topic+"</b><br/>");
                         });
-                        document.write("</blockquote><br><br>")
+                        document.write("</blockquote><br><br>");
                     });
                 }
             });
