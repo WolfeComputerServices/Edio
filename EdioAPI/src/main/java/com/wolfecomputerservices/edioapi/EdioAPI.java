@@ -48,7 +48,7 @@ public class EdioAPI {
         --------------------------
         0
         1
-        3
+        3       Custom (user defined)
         4       Field Trip
         7
         9       Holiday
@@ -151,17 +151,23 @@ public class EdioAPI {
         }
     }
 
-    public class UpComing {
+    public class Upcoming {
 
         public final String date;
         public final String course;
         public final String topic;
 
-        public UpComing(final String Date, final String Course, final String Topic) {
+        public Upcoming(final String Date, final String Course, final String Topic) {
             date = Date;
             course = Course;
             topic = Topic;
         }
+    }
+
+    public void add(List<Event> from, List<Upcoming> to) {
+        to.addAll(from.stream()
+                .map((event) -> new Upcoming(event.dateStart, event.eventName, event.eventDescription))
+                .collect(Collectors.toList()));
     }
 
     private boolean connectIfNeeded() {
@@ -424,18 +430,11 @@ public class EdioAPI {
         return true;
     }
 
-    @Deprecated
-    public List<Event> getTodaysEvents(final int studentId)
+    public List<Event> getDayEvents(final int studentId, LocalDate date) 
             throws IOException, InterruptedException {
-        try {
-            return getDayEvents(studentId, LocalDate.now());
-        } catch (InterruptedException ex) {
-            Logger.getLogger(EdioAPI.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+        return getDayEvents(studentId, date, "0,1,3,4,7,9");
     }
-
-    public List<Event> getDayEvents(final int studentId, LocalDate date)
+    public List<Event> getDayEvents(final int studentId, LocalDate date, String kinds)
             throws IOException, InterruptedException {
         ArrayList<Event> values = new ArrayList();
         final ZonedDateTime startTime = date.atStartOfDay()
@@ -448,9 +447,10 @@ public class EdioAPI {
                     .GET()
                     .uri(URI.create(String.format(
                             "https://www.myedio.com/api/v1/events?"
-                            + "endDate=%s&eventKinds=1,4,7,9,0,3&"
+                            + "endDate=%s&eventKinds=%s&"
                             + "includeType=true&startDate=%s&userIds=%d",
                             endTime.format(DateTimeFormatter.ISO_INSTANT),
+                            kinds,
                             startTime.format(DateTimeFormatter.ISO_INSTANT),
                             studentId)))
                     .header("Content-type", appJson)
@@ -563,19 +563,22 @@ public class EdioAPI {
 
                 }
             }
-        } catch (InterruptedException | IOException ex) {
+        } catch (IOException ex) {
+            Logger.getLogger(EdioAPI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
             Logger.getLogger(EdioAPI.class.getName()).log(Level.SEVERE, null, ex);
         }
         return count;
     }
 
-    public List<UpComing> getUpComing(final int studentId, final int numberOfDaysAhead)
+    public List<Upcoming> getUpComing(final int studentId, final int numberOfDaysAhead)
             throws IOException, InterruptedException {
         final List<String> keyWords = Collections.unmodifiableList(
                 new ArrayList<>(Arrays.asList(
-                        "Quiz", "Test", "Due"
+                        "quiz", "test", "due"
                 )));
-        ArrayList<UpComing> values = new ArrayList<>();
+        final String kinds = "3";
+        ArrayList<Upcoming> values = new ArrayList<>();
 
         final ZonedDateTime startTime = LocalDateTime.now()
                 .atZone(ZoneId.systemDefault())
@@ -620,14 +623,15 @@ public class EdioAPI {
                         final JSONObject day = course.getJSONObject("day");
                         final String topic = day.getString("name");
                         final String name = day.getJSONObject("course").getString("name");
-                        keyWords.parallelStream()
-                                .forEach((key_word) -> {
-                                    if (topic.toLowerCase().contains(key_word.toLowerCase())) {
-                                        values.add(new UpComing(day.getString("scheduledDate"), name, topic));
-                                    }
-                                });
+                        keyWords.stream()
+                            .forEach((keyword) -> {
+                                if (topic.toLowerCase().contains(keyword)) {
+                                    values.add(new Upcoming(day.getString("scheduledDate"), name, topic));
+                                }
+                            });
                     }
-                    ;
+                    
+                    add(getDayEvents(studentId, startTime.toLocalDate(), kinds), values);
                     break;
                 case 401:
                     if (retries < maxRetries) {

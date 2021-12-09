@@ -171,7 +171,7 @@ public class Edio {
             
             if (doOutput("upcoming")) {
                 JSONObject upcoming_parms = cfgOutput.getJSONObject("upcoming_parms");
-                List<EdioAPI.UpComing> upcoming;
+                List<EdioAPI.Upcoming> upcoming;
                 try {
                     upcoming = edioAPI.getUpComing(children.get(childName),
                             upcoming_parms.getInt("days"));
