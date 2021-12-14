@@ -28,8 +28,8 @@ The config file's contents are as follows:
   {
     "output":{
       "overdue":true,   /* true to retrieve overdue items, false otherwise */
-      "children":[
-        /* list of children's names you want to retrieve. Leave empty to retrieve all. */
+      "students":[
+        /* list of student's names you want to retrieve. Leave empty to retrieve all. */
       ],
       "school":true,    /* true to retrieve if the student has school today, false otherwise */
       "events_parms":{
@@ -55,7 +55,7 @@ If using the cli, the output is a JSON string similiar to the following:
 ```json
   {
     "school":true,
-    "children":[
+    "students":[
       {
         "overdues":[],
         "name":"Bob",
