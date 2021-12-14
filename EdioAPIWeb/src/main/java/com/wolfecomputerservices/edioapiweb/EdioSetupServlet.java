@@ -4,8 +4,6 @@ package com.wolfecomputerservices.edioapiweb;
  * Copyright (C) 2021 - Wolfe Computer Services
  * ALL RIGHTS RESERVED
  */
-
-import com.wolfecomputerservices.edioapi.EdioAPI;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,7 +11,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import javax.servlet.RequestDispatcher;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,8 +25,10 @@ import org.json.JSONObject;
  *
  * @author Ed Wolfe
  */
-@WebServlet(urlPatterns = {"/Setup"})
-public class SetupServlet extends HttpServlet {
+@WebServlet(name = "Edio Setup", urlPatterns = {"/edio.cfg"})
+public class EdioSetupServlet extends HttpServlet {
+
+    private Logger logger = Logger.getLogger(EdioSetupServlet.class.getName());
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -45,55 +46,57 @@ public class SetupServlet extends HttpServlet {
                     .getRequestDispatcher("/setup/form.html")
                     .forward(request, response);
         } else {
-            final String euid = request.getParameter("element_1");
-            final String eup  = request.getParameter("element_2");
-            final int updays   = Integer.parseInt(request.getParameter("element_3"));
-            final boolean overdues = request.getParameter("element_4_1").equals("1");
-            final boolean school = request.getParameter("element_4_2").equals("1");
-            final boolean upcoming = request.getParameter("element_4_3").equals("1");
-            final boolean events = request.getParameter("element_4_4").equals("1");
+            try {
+                final String euid = request.getParameter("element_1");
+                final String eup = request.getParameter("element_2");
+                final int updays = Integer.parseInt(request.getParameter("element_3").trim());
+                final boolean overdues = request.getParameter("element_4_1").equals("1");
+                final boolean school = request.getParameter("element_4_2").equals("1");
+                final boolean upcoming = request.getParameter("element_4_3").equals("1");
+                final boolean events = request.getParameter("element_4_4").equals("1");
 
-            response.setContentType("application/json;charset=utf-8");
-            ServletContext context = getServletContext();
-            
-            try ( PrintWriter out = response.getWriter()) {
-                final Path pathConfig = Paths.get(context.getRealPath("/"), EdioAPIServlet.DATA_PATH, EdioAPIServlet.CONFIG_FILE);
-                File jsonConfigFile = pathConfig.toFile();
-                
-                JSONObject json = new JSONObject("{"
-                        + "\"edio\": {"
+                response.setContentType("application/json;charset=utf-8");
+                ServletContext context = getServletContext();
+
+                try ( PrintWriter out = response.getWriter()) {
+                    final Path pathConfig = Paths.get(context.getRealPath("/"), EdioAPIServlet.DATA_PATH, EdioAPIServlet.CONFIG_FILE);
+                    File jsonConfigFile = pathConfig.toFile();
+
+                    JSONObject json = new JSONObject("{"
+                            + "\"edio\": {"
                             + "\"credentials\": {"
-                                + String.format("\"user\": \"%s\",", euid)
-                                + String.format("\"pass\": \"%s\"", eup)
+                            + String.format("\"user\": \"%s\",", euid)
+                            + String.format("\"pass\": \"%s\"", eup)
                             + "}"
-                        + "},"
-                        + "\"output\": {"
-                            + "\"children\": [],"
+                            + "},"
+                            + "\"output\": {"
+                            + "\"students\": [],"
                             + String.format("\"overdue\": %s,", overdues ? "true" : "false")
                             + String.format("\"school\": %s,", school ? "true" : "false")
                             + String.format("\"upcoming\": %s,", upcoming ? "true" : "false")
                             + String.format("\"events\": %s,", events ? "true" : "false")
                             + "\"events_parms\" : {\"date\": \"\" },"
                             + "\"upcoming_parms\": {"
-                                + String.format("\"days\": %d", updays)
+                            + String.format("\"days\": %d", updays)
                             + "}"
-                        + "}"
-                    + "}");
-                
-                if (!jsonConfigFile.exists()) {
-                    jsonConfigFile.getParentFile().mkdirs();
-                    jsonConfigFile.createNewFile();
-                }
-                    
-                try (FileOutputStream fos = new FileOutputStream(jsonConfigFile)) {
-                    try (OutputStreamWriter os = new OutputStreamWriter(fos)) {
-                        json.write(os);
+                            + "}"
+                            + "}");
+
+                    if (!jsonConfigFile.exists()) {
+                        jsonConfigFile.getParentFile().mkdirs();
+                        jsonConfigFile.createNewFile();
                     }
+
+                    try ( FileOutputStream fos = new FileOutputStream(jsonConfigFile)) {
+                        try ( OutputStreamWriter os = new OutputStreamWriter(fos)) {
+                            json.write(os);
+                        }
+                    }
+
+                    response.sendRedirect(context.getContextPath() + "/edio.do?refresh");
                 }
-                
-                RequestDispatcher dispatcher = getServletContext()
-                    .getRequestDispatcher("/Edio?refresh");
-                dispatcher.forward(request, response);
+            } catch (Exception ex) {
+                logger.log(Level.WARNING, ex.getMessage(), ex);
             }
         }
     }

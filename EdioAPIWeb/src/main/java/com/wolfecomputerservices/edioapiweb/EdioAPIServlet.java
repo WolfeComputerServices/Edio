@@ -13,8 +13,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidParameterException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -29,16 +31,69 @@ import org.json.JSONObject;
  *
  * @author Ed Wolfe
  */
-@WebServlet(name = "Edio", urlPatterns = {"/Edio"})
+@WebServlet(name = "Edio", urlPatterns = {"/edio.do"})
 public class EdioAPIServlet extends HttpServlet {
+
     protected static final String CONFIG_FILE = "edioapi-config.json";
-    protected static final String DATA_PATH = "data";
-    
-    private boolean isInitialized = false;
-    
+    protected static final String DATA_PATH = "WEB-INF";
+
+    private boolean setupNeeded = false;
+
     private JSONObject jsonConfig;
     private Edio edio;
-    
+
+    private Logger logger = Logger.getLogger(EdioAPIServlet.class.getName());
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        ServletContext context = config.getServletContext();
+        loadConfig(context);
+    }
+
+    @Override
+    public void destroy() {
+        if (edio != null) {
+            edio.disconnect();
+        }
+    }
+
+    private void loadConfig(ServletContext context) {
+        final Path pathConfig = Paths.get(context.getRealPath("/"), DATA_PATH, CONFIG_FILE);
+        File jsonConfigFile = pathConfig.toFile();
+
+        if (jsonConfigFile.exists()) {
+            try {
+                FileInputStream jsonConfigStream = new FileInputStream(jsonConfigFile);
+                InputStreamReader isr = new InputStreamReader(jsonConfigStream);
+                BufferedReader reader = new BufferedReader(isr);
+
+                StringBuilder sb = new StringBuilder();
+                String text;
+                while ((text = reader.readLine()) != null) {
+                    sb.append(text);
+                }
+
+                jsonConfig = new JSONObject(sb.toString());
+                if (edio != null) {
+                    edio.disconnect();
+                }
+
+                edio = new Edio(jsonConfig);
+            } catch (IOException | JSONException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+                return;
+            } catch (InvalidParameterException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+                edio = null;
+            }
+        } else {
+            logger.log(Level.CONFIG, "Servelet requires setup");
+        }
+        
+        setupNeeded = edio == null;
+    }
+
     /*
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -50,53 +105,20 @@ public class EdioAPIServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        JSONArray outErrors = new JSONArray();
-
         response.setContentType("application/json;charset=utf-8");
         //response.setHeader("Access-Control-Allow-Origin", "*");
         ServletContext context = getServletContext();
 
-        try (PrintWriter out = response.getWriter()) {
-            if (request.getQueryString() != null && request.getQueryString().equals("refresh")) {
-                jsonConfig = null;
-                response.sendRedirect("index.html");
-                return;
-            }
-        
-
-            if (jsonConfig == null) {
-                final Path pathConfig = Paths.get(context.getRealPath("/"), DATA_PATH, CONFIG_FILE);
-                File jsonConfigFile = pathConfig.toFile();
-
-                if (jsonConfigFile.exists()) {
-                    try {
-                        FileInputStream jsonConfigStream = new FileInputStream(jsonConfigFile);
-                        InputStreamReader isr = new InputStreamReader(jsonConfigStream);
-                        BufferedReader reader = new BufferedReader(isr);
-
-                        StringBuilder sb = new StringBuilder();
-                        String text;
-                        while ((text = reader.readLine()) != null)
-                            sb.append(text);
-
-                        jsonConfig = new JSONObject(sb.toString());
-                        
-                        isInitialized = true;
-                    } catch (IOException | JSONException ex) {
-                        Logger.getLogger(EdioAPIServlet.class.getName()).log(Level.SEVERE, null, ex);
-                        outErrors.put("Error loading parameters: " + ex.getMessage());
-                        return;
-                    }
-                    
-                    out.println(outErrors.toString());
-                }
-                else {
+        if (request.getQueryString() != null && request.getQueryString().equals("refresh")) {
+            loadConfig(context);
+            response.sendRedirect(request.getContextPath());
+        } else {
+            try ( PrintWriter out = response.getWriter()) {
+                if (setupNeeded) {
                     out.println("{\"setup_required\": true}");
+                } else {
+                    out.println(edio.executor());
                 }
-            }
-            if (isInitialized) {
-                edio = new Edio();
-                out.println(edio.srvletRun(jsonConfig));
             }
         }
     }
@@ -140,7 +162,7 @@ public class EdioAPIServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-/*    private static String toCamelCase(String value) {
+    /*    private static String toCamelCase(String value) {
 	StringBuilder returnValue = new StringBuilder();
 	String throwAwayChars = "()[]{}=?!.:,-_+\\\"#~/";
 	value = value.replaceAll("[" + Pattern.quote(throwAwayChars) + "]", " ");
@@ -157,5 +179,5 @@ public class EdioAPIServlet extends HttpServlet {
 	}
 	return returnValue.toString().replaceAll("\\s+", "");
     }
-*/
+     */
 }

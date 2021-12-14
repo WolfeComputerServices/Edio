@@ -5,23 +5,23 @@
 $(document).ready(function() {
     $.ajax({
         type: 'GET',
-        url: '/EdioAPIWeb/Edio',
+        url: 'edio.do',
         dataType: 'json',
     })
     .done(function(data, textStatus, jqXHR) {
         if (data.setup_required === true) {
-            document.location.replace('/EdioAPIWeb/Setup');
+            document.location.replace('edio.cfg');
         } else {
             $('body').html("<div>" 
                     + 
-                    displayChildren(data.children)
+                    displayStudents(data.students)
                     + "</div>");
         }
     });
 
-    function childHead(child) {
+    function studentHead(student) {
         return "<div class='border-primary text-primary white'><h1>" 
-            + child.name 
+            + student.name 
             + "</h1></div><br/><blockquote>";
     }
     function overdueHead() {
@@ -56,7 +56,7 @@ $(document).ready(function() {
         return "</tbody></table></blockquote><br><br>";
     }
 
-    function displayChildOverdues(overdues) {
+    function displayStudentOverdues(overdues) {
         if (overdues) {
             var entries = overdueHead();
             $.each(overdues, (index, overdue) => {
@@ -67,23 +67,23 @@ $(document).ready(function() {
 
         return "No overdue items";
     }
-    function displayChildUpcoming(upcomings) {
+    function displayStudentUpcoming(upcomings) {
         var entries = upcomingHead();
         $.each(upcomings, (index, upcoming) => {
             entries += upcomingEntry(upcoming);
         });
         return entries + upcomingFoot();
     }
-    function displayChildData(child) {
-        return childHead(child)
-            + displayChildOverdues(child.overdues)
-            + displayChildUpcoming(child.upcoming);
+    function displayStudentData(student) {
+        return studentHead(student)
+            + displayStudentOverdues(student.overdues)
+            + displayStudentUpcoming(student.upcoming);
     }
     
-    function displayChildren(children) {
+    function displayStudents(student) {
         var entries = "<div class='container mt-3'>";
-        $.each(children, (index, child) => {
-            entries += displayChildData(child);
+        $.each(student, (index, student) => {
+            entries += displayStudentData(student);
         });
         return entries;
     }
