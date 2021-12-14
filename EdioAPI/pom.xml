@@ -48,6 +48,12 @@
             <artifactId>spring-boot-starter-mail</artifactId>
             <version>2.6.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.eclipse.jdt/org.eclipse.jdt.annotation -->
+        <dependency>
+            <groupId>org.eclipse.jdt</groupId>
+            <artifactId>org.eclipse.jdt.annotation</artifactId>
+            <version>2.2.600</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
       <dependencies>

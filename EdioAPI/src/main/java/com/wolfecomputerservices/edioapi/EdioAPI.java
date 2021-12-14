@@ -25,10 +25,10 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.json.JSONArray;
 
 import org.json.JSONObject;
+import org.eclipse.jdt.annotation.Nullable;
 
 import org.springframework.util.StringUtils;
 
