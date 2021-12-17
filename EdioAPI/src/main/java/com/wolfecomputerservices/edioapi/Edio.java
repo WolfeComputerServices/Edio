@@ -167,29 +167,6 @@ public class Edio implements AutoCloseable {
         }
     }
 
-/*    public void cliRun(String[] args) {
-        try {
-            File file = new File(args[0]);
-            byte[] data;
-            try (FileInputStream fis = new FileInputStream(file)) {
-                data = new byte[(int) file.length()];
-                fis.read(data);
-            }
-            
-            setConfig(new JSONObject(new String(data, "UTF-8")));
-            
-            System.out.println(executor().toString());
-        } catch (IOException | JSONException ex) {
-            logger.log(Level.SEVERE, null, ex);
-            outErrors.put("Config file specified could not be found or is invalid: " + ex.getMessage());
-            System.out.println(finalizeOutput());
-        }
-    }
-    
-    public JSONObject srvletRun() {
-        return executor();
-    }
-*/
     /**
      * Returns all available data
      * @return JSONObject containing data.
@@ -267,6 +244,7 @@ public class Edio implements AutoCloseable {
                                 "course"), 
                                 "name"),
                         Transformers.getMapValueAsString((Map<String,Object>)u, "name")))
+                    .sorted((s1, s2)->s1.dueDate.compareTo(s2.dueDate))
                     .collect(Collectors.toList());
             }
             
@@ -297,6 +275,7 @@ public class Edio implements AutoCloseable {
                         Matcher matcher = pattern.matcher(s.topic.toLowerCase());
                         return matcher.find();
                     })
+                    .sorted((s1, s2)->s1.date.compareTo(s2.date))
                     .collect(Collectors.toList());
             }
 
