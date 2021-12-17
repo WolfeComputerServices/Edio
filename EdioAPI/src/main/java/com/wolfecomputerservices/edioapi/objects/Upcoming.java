@@ -5,6 +5,7 @@
 
 package com.wolfecomputerservices.edioapi.objects;
 
+import com.google.gson.annotations.Expose;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -15,9 +16,12 @@ import java.time.format.DateTimeFormatter;
  *
 **/
 public class Upcoming {
-        public final LocalDate date;
-        public final String course;
-        public final String topic;
+        @Expose(serialize = true)
+        public LocalDate date;
+        @Expose(serialize = true)
+        public String course;
+        @Expose(serialize = true)
+        public String topic;
 
         public Upcoming(final LocalDate date, final String course, final String topic) {
             this.date = date;

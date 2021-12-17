@@ -28,7 +28,8 @@ public class Transformers {
     */
     public static void addAll(List<Event> from, List<Upcoming> to) {
         to.addAll(from.stream()
-                .map((event) -> new Upcoming(event.dateStart, event.eventName, event.eventDescription))
+                .map((event) -> new Upcoming(event.dateStart.toLocalDate(), 
+                        event.eventName, event.eventDescription))
                 .collect(Collectors.toList()));
     }
     

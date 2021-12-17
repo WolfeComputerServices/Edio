@@ -208,7 +208,7 @@ public final class EdioAPI implements AutoCloseable {
 
         retries = 0;
         cookies = response.headers().map().get("set-cookie").toString();
-        accountUser = (Map<String, Object>) EdioGsonDeserializer
+        accountUser = (Map<String, Object>) EdioGson
                 .toMap(response.body())
                 .get("resultObject");
 
@@ -249,7 +249,7 @@ public final class EdioAPI implements AutoCloseable {
 
                 switch (response.statusCode()) {
                     case 200:
-                        return EdioGsonDeserializer.toMap(response.body());
+                        return EdioGson.toMap(response.body());
                     default:
                         logger.log(Level.SEVERE, null, "HTTP Code: " + response.statusCode());
                 }
@@ -289,21 +289,7 @@ public final class EdioAPI implements AutoCloseable {
 
             switch (response.statusCode()) {
                 case 200:
-                    /*                    List<Event> values = new ArrayList<>();
-
-                    JSONArray getOverdues = new JSONObject(lastResponse.body()).getJSONArray("resultObject");
-                    for (int i=0;i<overdues.length();i++) {
-                        JSONObject overdue = getOverdues.getJSONObject(i);
-                        values.add(new Event(overdue.getInt("id"),
-                                overdue.getString("createdOn"),
-                                overdue.getString("scheduledDate"),
-                                null,//day.getString("updatedOn"),
-                                overdue.getJSONObject("day").getJSONObject("course").getString("user"),
-                                overdue.getJSONObject("day").getString("user")));
-                    }
-                    return values;
-                     */
-                    return EdioGsonDeserializer.toMap(response.body());
+                    return EdioGson.toMap(response.body());
 
                 case 401:
                     if (retries < maxRetries) {
@@ -397,7 +383,7 @@ public final class EdioAPI implements AutoCloseable {
 
                 switch (response.statusCode()) {
                     case 200:
-                        return EdioGsonDeserializer.toMap(response.body());
+                        return EdioGson.toMap(response.body());
                     default:
                         throw new IOException("HTTP Code: " + response.statusCode());
                 }
@@ -446,7 +432,7 @@ public final class EdioAPI implements AutoCloseable {
                 switch (response.statusCode()) {
                     case 200:
                         return combineResultObjects(getDayEvents(studentId, startTime.toLocalDate(), new EventKinds[] {EventKinds.EK_CUSTOM}),
-                                EdioGsonDeserializer.toMap(response.body()));
+                                EdioGson.toMap(response.body()));
                    case 401:
                         if (retries < maxRetries) {
                             authentication(AuthType.AT_LOGON);

@@ -5,6 +5,7 @@
 
 package com.wolfecomputerservices.edioapi.objects;
 
+import com.google.gson.annotations.Expose;
 import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -15,11 +16,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 **/
 @NonNullByDefault
 public class Student {
-    private final int id;
-    private final String name;
-    private final Overdue[] overdues;
-    private final Event[] events;
-    private final Upcoming[] upcomings;
+    @Expose(serialize = true)
+    public int id;
+    @Expose(serialize = true)
+    public String name;
+    @Expose(serialize = true)
+    public Overdue[] overdues;
+    @Expose(serialize = true)
+    public Event[] events;
+    @Expose(serialize = true)
+    public Upcoming[] upcomings;
 
     public Student(Student s) {
         this.id = s.id;

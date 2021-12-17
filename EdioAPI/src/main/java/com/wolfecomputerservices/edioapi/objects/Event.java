@@ -4,7 +4,9 @@
  */
 package com.wolfecomputerservices.edioapi.objects;
 
+import com.google.gson.annotations.Expose;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -16,13 +18,20 @@ import java.time.format.DateTimeFormatter;
  *
  */
 public class Event {
-    public final int id;
-    public final LocalDate dateCreated;
-    public final LocalDate dateStart;
-    public final LocalDate dateEnd;
-    public final String eventName;
-    public final String eventDescription;
+    @Expose(serialize = true)
+    public int id;
+    @Expose(serialize = true)
+    public LocalDate dateCreated;
+    @Expose(serialize = true)
+    public LocalDateTime dateStart;
+    @Expose(serialize = true)
+    public LocalDateTime dateEnd;
+    @Expose(serialize = true)
+    public String eventName;
+    @Expose(serialize = true)
+    public String eventDescription;
 
+    @Expose(serialize = false)
     private final String ICAL_FORMAT = "yyyyMMdd HHmmss";
 
     public Event(final int Id, final String CreatedDate,
@@ -30,8 +39,8 @@ public class Event {
             final String EventName, final String EventDescription) {
         id = Id;
         dateCreated = LocalDate.parse(CreatedDate, DateTimeFormatter.ISO_DATE_TIME);
-        dateStart = LocalDate.parse(StartDate, DateTimeFormatter.ISO_DATE_TIME);;
-        dateEnd = LocalDate.parse(EndDate, DateTimeFormatter.ISO_DATE_TIME);;
+        dateStart = LocalDateTime.parse(StartDate, DateTimeFormatter.ISO_DATE_TIME);;
+        dateEnd = LocalDateTime.parse(EndDate, DateTimeFormatter.ISO_DATE_TIME);;
         eventName = EventName;
         eventDescription = EventDescription;
     }

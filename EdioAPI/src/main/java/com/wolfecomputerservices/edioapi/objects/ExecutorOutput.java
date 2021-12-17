@@ -5,8 +5,8 @@
 
 package com.wolfecomputerservices.edioapi.objects;
 
-import com.wolfecomputerservices.edioapi.objects.Event;
-import com.wolfecomputerservices.edioapi.objects.Student;
+import com.google.gson.annotations.Expose;
+import com.wolfecomputerservices.edioapi.EdioGson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -16,9 +16,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 **/
 @NonNullByDefault
 public class ExecutorOutput {
+    @Expose(serialize = true)
     public boolean setup_required;
+    @Expose(serialize = true)
     public boolean school;
+    @Expose(serialize = true)
     public Student[] students = new Student[0];
+    @Expose(serialize = true)
     public Event[] events = new Event[0];
+    @Expose(serialize = true)
     public String[] errors = new String[0];
+    
+    public String toJson() {
+        return EdioGson.toJson(this);
+    }
 }

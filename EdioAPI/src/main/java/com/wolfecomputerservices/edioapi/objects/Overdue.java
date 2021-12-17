@@ -4,6 +4,7 @@
  */
 package com.wolfecomputerservices.edioapi.objects;
 
+import com.google.gson.annotations.Expose;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -17,9 +18,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public final class Overdue {
 
-    private final LocalDate dueDate;
-    private final String course;
-    private final String assignment;
+    @Expose(serialize = true)
+    public LocalDate dueDate;
+    @Expose(serialize = true)
+    public String course;
+    @Expose(serialize = true)
+    public String assignment;
 
     public Overdue(String dueDate, String course, String assignment) {
         this.dueDate = LocalDate.parse(dueDate, DateTimeFormatter.ISO_DATE_TIME);
