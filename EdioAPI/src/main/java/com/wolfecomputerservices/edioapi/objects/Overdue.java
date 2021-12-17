@@ -4,14 +4,16 @@
  */
 package com.wolfecomputerservices.edioapi.objects;
 
-import com.google.gson.annotations.Expose;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.Expose;
 
 /**
  *
- * @author Wolfe Computer Services (Ed Wolfe}
+ * @author Wolfe Computer Services - Initial contribution
  *
  *
  */
@@ -27,7 +29,7 @@ public final class Overdue {
 
     public Overdue(String dueDate, String course, String assignment) {
         this.dueDate = LocalDate.parse(dueDate, DateTimeFormatter.ISO_DATE_TIME);
-        
+
         this.course = course;
         this.assignment = assignment;
     }

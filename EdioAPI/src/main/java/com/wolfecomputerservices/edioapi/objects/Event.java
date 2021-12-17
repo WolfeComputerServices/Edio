@@ -4,19 +4,23 @@
  */
 package com.wolfecomputerservices.edioapi.objects;
 
-import com.google.gson.annotations.Expose;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.google.gson.annotations.Expose;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents an event from edio
  *
- * @author Wolfe Computer Services (Ed Wolfe}
+ * @author Wolfe Computer Services - Initial contribution
  *
  *
  */
+@NonNullByDefault
 public class Event {
     @Expose(serialize = true)
     public int id;
@@ -34,40 +38,33 @@ public class Event {
     @Expose(serialize = false)
     private final String ICAL_FORMAT = "yyyyMMdd HHmmss";
 
-    public Event(final int Id, final String CreatedDate,
-            final String StartDate, final String EndDate,
+    public Event(final int Id, final String CreatedDate, final String StartDate, final String EndDate,
             final String EventName, final String EventDescription) {
         id = Id;
         dateCreated = LocalDate.parse(CreatedDate, DateTimeFormatter.ISO_DATE_TIME);
-        dateStart = LocalDateTime.parse(StartDate, DateTimeFormatter.ISO_DATE_TIME);;
-        dateEnd = LocalDateTime.parse(EndDate, DateTimeFormatter.ISO_DATE_TIME);;
+        dateStart = LocalDateTime.parse(StartDate, DateTimeFormatter.ISO_DATE_TIME);
+        ;
+        dateEnd = LocalDateTime.parse(EndDate, DateTimeFormatter.ISO_DATE_TIME);
+        ;
         eventName = EventName;
         eventDescription = EventDescription;
     }
 
     public String formatDateAs(final String date, final String format) {
-        return ZonedDateTime
-                .parse(date)
-                .format(DateTimeFormatter.ofPattern(format));
+        return ZonedDateTime.parse(date).format(DateTimeFormatter.ofPattern(format));
     }
 
     public String formatDateAsiCal(final String date) {
-        return formatDateAs(date, ICAL_FORMAT)
-                .replace(" ", "T");
-        //+ "Z";
+        return formatDateAs(date, ICAL_FORMAT).replace(" ", "T");
+        // + "Z";
     }
 
     public String formatDateAsISO8601(final String date) {
-        return ZonedDateTime
-                .parse(date)
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                .replace(" ", "T");
-        //+"Z";
+        return ZonedDateTime.parse(date).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).replace(" ", "T");
+        // +"Z";
     }
 
     public String formatDateAs(final String date, final DateTimeFormatter dtfFormat) {
-        return ZonedDateTime
-                .parse(date)
-                .format(dtfFormat);
+        return ZonedDateTime.parse(date).format(dtfFormat);
     }
 }

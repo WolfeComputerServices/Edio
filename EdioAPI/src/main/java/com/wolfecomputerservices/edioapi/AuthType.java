@@ -4,13 +4,15 @@
  */
 package com.wolfecomputerservices.edioapi;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Authentication Type
  *
- * @author Wolfe Computer Services (Ed Wolfe}
- *
+ * @author Wolfe Computer Services - Initial contribution
  *
  */
+@NonNullByDefault
 /* internal */ enum AuthType {
     AT_LOGON,
     AT_LOGOFF

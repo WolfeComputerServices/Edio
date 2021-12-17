@@ -5,27 +5,32 @@
 
 package com.wolfecomputerservices.edioapi.objects;
 
-import com.google.gson.annotations.Expose;
 import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.Expose;
 
 /**
  *
- * @author  Wolfe Computer Services (Ed Wolfe}
+ * @author Wolfe Computer Services - Initial contribution
  *
-**/
+ **/
 @NonNullByDefault
 public class Student {
     @Expose(serialize = true)
-    public int id;
+    public int id = Integer.MIN_VALUE;
     @Expose(serialize = true)
-    public String name;
+    public String name = "";
     @Expose(serialize = true)
-    public Overdue[] overdues;
+    public Overdue[] overdues = new Overdue[0];
     @Expose(serialize = true)
-    public Event[] events;
+    public Event[] events = new Event[0];
     @Expose(serialize = true)
-    public Upcoming[] upcomings;
+    public Upcoming[] upcomings = new Upcoming[0];
+
+    public Student() {
+    }
 
     public Student(Student s) {
         this.id = s.id;
@@ -42,31 +47,31 @@ public class Student {
         this.overdues = new Overdue[0];
         this.upcomings = new Upcoming[0];
     }
-    public Student(int id, String name, List<Overdue> overdues, List<Event> events, 
-            List<Upcoming> upcomings) {
+
+    public Student(int id, String name, List<Overdue> overdues, List<Event> events, List<Upcoming> upcomings) {
         this.id = id;
         this.name = name;
         this.events = events.toArray(new Event[0]);
         this.overdues = overdues.toArray(new Overdue[0]);
         this.upcomings = upcomings.toArray(new Upcoming[0]);
     }
-    
+
     public int getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public Overdue[] getOverdues() {
         return overdues;
     }
-    
+
     public Event[] getEvents() {
         return events;
     }
-    
+
     public Upcoming[] getUpcomings() {
         return upcomings;
     }

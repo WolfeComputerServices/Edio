@@ -5,15 +5,16 @@
 
 package com.wolfecomputerservices.edioapi.objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.Expose;
 import com.wolfecomputerservices.edioapi.EdioGson;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  *
- * @author  Wolfe Computer Services (Ed Wolfe}
+ * @author Wolfe Computer Services - Initial contribution
  *
-**/
+ **/
 @NonNullByDefault
 public class ExecutorOutput {
     @Expose(serialize = true)
@@ -26,7 +27,7 @@ public class ExecutorOutput {
     public Event[] events = new Event[0];
     @Expose(serialize = true)
     public String[] errors = new String[0];
-    
+
     public String toJson() {
         return EdioGson.toJson(this);
     }
