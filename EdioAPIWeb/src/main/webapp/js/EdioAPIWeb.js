@@ -47,7 +47,7 @@ $(document).ready(function() {
     
     function upcomingEntry(upcoming) {
         return "<tr>"
-            + "<td>" + upcoming.date.substring(0,10) + "</td><td> "
+            + "<td>" + upcoming.date.iso.substring(0,10) + "</td><td> "
             + upcoming.course + "</td><td><b>"
             + upcoming.topic + "</b></td></tr>";
     }
@@ -77,7 +77,7 @@ $(document).ready(function() {
     function displayStudentData(student) {
         return studentHead(student)
             + displayStudentOverdues(student.overdues)
-            + displayStudentUpcoming(student.upcoming);
+            + displayStudentUpcoming(student.upcomings);
     }
     
     function displayStudents(student) {

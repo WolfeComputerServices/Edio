@@ -4,6 +4,8 @@ package com.wolfecomputerservices.edioapiweb;
  * Copyright (C) 2021 - Wolfe Computer Services
  * ALL RIGHTS RESERVED
  */
+import com.google.gson.Gson;
+import com.wolfecomputerservices.edioapi.objects.Configuration;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,17 +21,18 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.json.JSONObject;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  *
  * @author Ed Wolfe
  */
+@NonNullByDefault
 @WebServlet(name = "Edio Setup", urlPatterns = {"/edio.cfg"})
 public class EdioSetupServlet extends HttpServlet {
 
     private Logger logger = Logger.getLogger(EdioSetupServlet.class.getName());
-
+    private final Gson gson = new Gson();
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -47,13 +50,14 @@ public class EdioSetupServlet extends HttpServlet {
                     .forward(request, response);
         } else {
             try {
-                final String euid = request.getParameter("element_1");
-                final String eup = request.getParameter("element_2");
-                final int updays = Integer.parseInt(request.getParameter("element_3").trim());
-                final boolean overdues = request.getParameter("element_4_1").equals("1");
-                final boolean school = request.getParameter("element_4_2").equals("1");
-                final boolean upcoming = request.getParameter("element_4_3").equals("1");
-                final boolean events = request.getParameter("element_4_4").equals("1");
+                Configuration config = new Configuration();
+                config.edio.credentials.user = request.getParameter("element_1");
+                config.edio.credentials.pass = request.getParameter("element_2");
+                config.output.upcoming_days  = Integer.parseInt(request.getParameter("element_3").trim());
+                config.output.overdue = request.getParameter("element_4_1").equals("1");
+                config.output.school  = request.getParameter("element_4_2").equals("1");
+                config.output.upcoming= request.getParameter("element_4_3").equals("1");
+                config.output.events  = request.getParameter("element_4_4").equals("1");
 
                 response.setContentType("application/json;charset=utf-8");
                 ServletContext context = getServletContext();
@@ -62,26 +66,6 @@ public class EdioSetupServlet extends HttpServlet {
                     final Path pathConfig = Paths.get(context.getRealPath("/"), EdioAPIServlet.DATA_PATH, EdioAPIServlet.CONFIG_FILE);
                     File jsonConfigFile = pathConfig.toFile();
 
-                    JSONObject json = new JSONObject("{"
-                            + "\"edio\": {"
-                            + "\"credentials\": {"
-                            + String.format("\"user\": \"%s\",", euid)
-                            + String.format("\"pass\": \"%s\"", eup)
-                            + "}"
-                            + "},"
-                            + "\"output\": {"
-                            + "\"students\": [],"
-                            + String.format("\"overdue\": %s,", overdues ? "true" : "false")
-                            + String.format("\"school\": %s,", school ? "true" : "false")
-                            + String.format("\"upcoming\": %s,", upcoming ? "true" : "false")
-                            + String.format("\"events\": %s,", events ? "true" : "false")
-                            + "\"events_parms\" : {\"date\": \"\" },"
-                            + "\"upcoming_parms\": {"
-                            + String.format("\"days\": %d", updays)
-                            + "}"
-                            + "}"
-                            + "}");
-
                     if (!jsonConfigFile.exists()) {
                         jsonConfigFile.getParentFile().mkdirs();
                         jsonConfigFile.createNewFile();
@@ -89,7 +73,7 @@ public class EdioSetupServlet extends HttpServlet {
 
                     try ( FileOutputStream fos = new FileOutputStream(jsonConfigFile)) {
                         try ( OutputStreamWriter os = new OutputStreamWriter(fos)) {
-                            json.write(os);
+                            os.write(gson.toJson(config));
                         }
                     }
 
