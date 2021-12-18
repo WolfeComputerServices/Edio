@@ -56,6 +56,8 @@ public class Edio implements AutoCloseable {
     public Edio(String jsonConfig) {
         Object object = gson.fromJson(jsonConfig, Configuration.class);
         this.config = object == null ? new Configuration() : (Configuration) object;
+
+        edioAPI = new EdioAPI(this.config.edio.credentials);
     }
 
     /**
@@ -93,6 +95,8 @@ public class Edio implements AutoCloseable {
 
         this.config.edio.credentials = credentials;
         this.config.output.upcoming_days = upcoming_days;
+
+        edioAPI = new EdioAPI(this.config.edio.credentials);
     }
 
     /**
