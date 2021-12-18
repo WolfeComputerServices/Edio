@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import com.wolfecomputerservices.edioapi.objects.Configuration;
 import com.wolfecomputerservices.edioapi.objects.Event;
 import com.wolfecomputerservices.edioapi.objects.ExecutorOutput;
@@ -130,8 +129,7 @@ public class Edio implements AutoCloseable {
         return (List<Student>) Transformers
                 .getMapValueAsArrayList(Transformers.getMapValueAsMap(edioAPI.getStudents(), "resultObject"),
                         "primaryUserRoleRelationships")
-                .stream().map(s -> (LinkedTreeMap<String, Object>) s)
-                .map(s -> Transformers.getMapValueAsMap(s, "secondaryUser"))
+                .stream().map(s -> (Map<String, Object>) s).map(s -> Transformers.getMapValueAsMap(s, "secondaryUser"))
                 .map(s -> new Student(Transformers.getMapValueAsInt(s, "id"),
                         Transformers.getMapValueAsString(s, "firstName")))
                 .collect(Collectors.toList());

@@ -33,6 +33,7 @@ import com.wolfecomputerservices.edioapi.objects.Configuration.Edio.Credentials;
  *
  */
 @NonNullByDefault
+@SuppressWarnings("unchecked")
 public final class EdioAPI implements AutoCloseable {
 
     // Nullables
@@ -119,7 +120,7 @@ public final class EdioAPI implements AutoCloseable {
                 .setHeader("sec-ch-ua-platform", sec_ch_ua_platform).setHeader("sec-fetch-dest", sec_fetch_dest_empty)
                 .setHeader("sec-fetch-code", sec_fetch_code).setHeader("sec-fetch-site", sec_fetch_site_sameOrigin)
                 .setHeader("User-Agent", UserAgent).setHeader("cookie", cookies).build();
-        HttpResponse response;
+        HttpResponse<String> response;
         try {
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException ex) {
@@ -151,22 +152,17 @@ public final class EdioAPI implements AutoCloseable {
     private boolean authentication(AuthType type) {
         retries++;
         HttpRequest.Builder builder;
-        if (null == type) {
-            return false;
-        } else {
-            switch (type) {
-                case AT_LOGON:
-                    String json = new StringBuilder().append("{")
-                            .append(String.format("\"password\": \"%s\",", userPass))
-                            .append(String.format("\"username\": \"%s\"", userId)).append("}").toString();
-                    builder = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(json));
-                    break;
-                case AT_LOGOFF:
-                    builder = HttpRequest.newBuilder().DELETE();
-                    break;
-                default:
-                    return false;
-            }
+        switch (type) {
+            case AT_LOGON:
+                String json = new StringBuilder().append("{").append(String.format("\"password\": \"%s\",", userPass))
+                        .append(String.format("\"username\": \"%s\"", userId)).append("}").toString();
+                builder = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(json));
+                break;
+            case AT_LOGOFF:
+                builder = HttpRequest.newBuilder().DELETE();
+                break;
+            default:
+                return false;
         }
         HttpRequest request = builder.uri(URI.create("https://www.myedio.com/api/v1/authentication/"))
                 .header("Content-type", appJson).setHeader("authority", authority).setHeader("referer", refererLogon)
@@ -174,7 +170,7 @@ public final class EdioAPI implements AutoCloseable {
                 .setHeader("sec-ch-ua-platform", sec_ch_ua_platform).setHeader("sec-fetch-dest", sec_fetch_dest_empty)
                 .setHeader("sec-fetch-code", sec_fetch_code).setHeader("sec-fetch-site", sec_fetch_site_sameOrigin)
                 .setHeader("User-Agent", UserAgent).build();
-        HttpResponse response;
+        HttpResponse<String> response;
         try {
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException ex) {
@@ -186,7 +182,9 @@ public final class EdioAPI implements AutoCloseable {
         }
 
         retries = 0;
-        cookies = response.headers().map().get("set-cookie").toString();
+        cookies = response.headers().map().containsKey("set-cookie")
+                ? response.headers().map().get("set-cookie").toString()
+                : "";
         accountUser = (Map<String, Object>) EdioGson.toMap(response.body()).get("resultObject");
 
         return true;
@@ -213,7 +211,7 @@ public final class EdioAPI implements AutoCloseable {
                     .setHeader("sec-fetch-dest", sec_fetch_dest_empty).setHeader("sec-fetch-code", sec_fetch_code)
                     .setHeader("sec-fetch-site", sec_fetch_site_sameOrigin).setHeader("User-Agent", UserAgent)
                     .setHeader("cookie", cookies).build();
-            HttpResponse response;
+            HttpResponse<String> response;
             try {
                 response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
@@ -241,7 +239,7 @@ public final class EdioAPI implements AutoCloseable {
                     .setHeader("sec-fetch-dest", sec_fetch_dest_empty).setHeader("sec-fetch-code", sec_fetch_code)
                     .setHeader("sec-fetch-site", sec_fetch_site_sameOrigin).setHeader("User-Agent", UserAgent)
                     .setHeader("cookie", cookies).build();
-            HttpResponse response;
+            HttpResponse<String> response;
             try {
                 response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             } catch (IOException | InterruptedException ex) {
@@ -329,7 +327,8 @@ public final class EdioAPI implements AutoCloseable {
                         .setHeader("sec-fetch-dest", sec_fetch_dest_empty).setHeader("sec-fetch-code", sec_fetch_code)
                         .setHeader("sec-fetch-site", sec_fetch_site_sameOrigin).setHeader("User-Agent", UserAgent)
                         .setHeader("cookie", cookies).build();
-                HttpResponse response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
                 switch (response.statusCode()) {
                     case 200:
@@ -364,7 +363,7 @@ public final class EdioAPI implements AutoCloseable {
                         .setHeader("sec-fetch-site", sec_fetch_site_sameOrigin).setHeader("User-Agent", UserAgent)
                         .setHeader("cookie", cookies).build();
 
-                HttpResponse response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
                 switch (response.statusCode()) {
                     case 200:

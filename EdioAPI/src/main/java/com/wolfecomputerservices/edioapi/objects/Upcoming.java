@@ -8,9 +8,9 @@ package com.wolfecomputerservices.edioapi.objects;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import com.google.gson.annotations.Expose;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * Represents upcoming item in Edio

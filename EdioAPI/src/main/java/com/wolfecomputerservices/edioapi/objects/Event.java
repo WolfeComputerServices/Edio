@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.google.gson.annotations.Expose;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * Represents an event from edio
