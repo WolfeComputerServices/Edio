@@ -379,7 +379,7 @@ public final class EdioAPI implements AutoCloseable {
                         throw new IOException("HTTP Code: " + response.statusCode());
                 }
             } catch (IOException | InterruptedException ex) {
-                Logger.getLogger(EdioAPI.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, "getUpoming()", ex);
             }
         }
         return new HashMap<>();

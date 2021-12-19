@@ -10,6 +10,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
+import com.wolfecomputerservices.edioapi.Transformers;
 
 /**
  *
@@ -42,7 +43,7 @@ public class Student {
 
     public Student(int id, String name) {
         this.id = id;
-        this.name = name;
+        this.name = Transformers.toCamelCase(name);
         this.events = new Event[0];
         this.overdues = new Overdue[0];
         this.upcomings = new Upcoming[0];
@@ -50,7 +51,7 @@ public class Student {
 
     public Student(int id, String name, List<Overdue> overdues, List<Event> events, List<Upcoming> upcomings) {
         this.id = id;
-        this.name = name;
+        this.name = Transformers.toCamelCase(name);
         this.events = events.toArray(new Event[0]);
         this.overdues = overdues.toArray(new Overdue[0]);
         this.upcomings = upcomings.toArray(new Upcoming[0]);

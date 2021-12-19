@@ -135,7 +135,9 @@ public class Edio implements AutoCloseable {
                         "primaryUserRoleRelationships")
                 .stream().map(s -> (Map<String, Object>) s).map(s -> Transformers.getMapValueAsMap(s, "secondaryUser"))
                 .map(s -> new Student(Transformers.getMapValueAsInt(s, "id"),
-                        Transformers.getMapValueAsString(s, "firstName")))
+                        Transformers.getMapValueAsString(s, "firstName") + " " +
+                                Transformers.getMapValueAsString(s, "middleName") + " "  +
+                                Transformers.getMapValueAsString(s, "lastName")))
                 .collect(Collectors.toList());
     }
 
@@ -150,6 +152,13 @@ public class Edio implements AutoCloseable {
 
     /**
      * Determines if there is school today.
+     * @return true if there is school, false if not.
+     */
+    public boolean hasSchoolToday() {
+        return hasSchool(LocalDate.now());
+    }
+    /**
+     * Determines if there school on date.
      * 
      * @param date Date to check or null for today
      * @return True if there is school today, false if not.
@@ -227,12 +236,6 @@ public class Edio implements AutoCloseable {
             return requiresSetup(output);
 
         final Student[] requestedStudents = getStudentsAsMap().values().toArray(new Student[0]);
-        /*
-         * .parallelStream()
-         * .filter(student->contains(config.output.students, student.getName()))
-         * .collect(Collectors.toList())
-         * .toArray(new Student[0]);
-         */
         final LocalDateTime dateToInspect = LocalDateTime.now();
         if (doSchool)
             output.school = hasSchool(dateToInspect.toLocalDate());

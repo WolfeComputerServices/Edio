@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import com.wolfecomputerservices.edioapi.objects.Event;
 import com.wolfecomputerservices.edioapi.objects.Upcoming;
+import java.util.Arrays;
 
 /**
  *
@@ -100,5 +101,11 @@ public class Transformers {
         return getMapValueAsArrayList(getMapValueAsMap(map, "resultObject"), "primaryUserRoleRelationships").stream()
                 .map(s -> (Map<String, Object>) s).map(s -> Transformers.getMapValueAsMap(s, "secondaryUser"))
                 .mapToInt(s -> getMapValueAsInt(toMapValueMap(s), "id")).toArray();
+    }
+    
+    public static String toCamelCase(String value) {
+        return Arrays.stream(value.split("[\\W_]+"))
+                .map(w->w.isEmpty() ? w : Character.toUpperCase(w.charAt(0)) + w.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
     }
 }
