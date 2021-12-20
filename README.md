@@ -1,5 +1,5 @@
 # Edio
-Commonwealth Charter Academy (CCA) Edio "enhacnments
+Commonwealth Charter Academy (CCA) Edio "enhancements
 
 This is a set of java classes, programs and servlets used to gether information from the CCA Edio about student schedule. I wrote it for two reasons:
 
@@ -100,3 +100,7 @@ If using the cli, the output is a JSON string similiar to the following:
 Ideas for future enhancement:
 
   + Add ability to propigate to Google gmail (and possibly others). The work is started as it generats iCal format for events already.
+
+# openHAB
+
+I've developed an openHAB binding to work with this API for automating tasks requiring knowledge of school status, student overdue assignments, etc. You can find it in my <a href='https://github.com/WolfeComputerServices/openhab-binding-ccaedio'>CCA Edio openHAB repository</a>.
