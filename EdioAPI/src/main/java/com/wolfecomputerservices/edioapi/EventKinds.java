@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-/* internal */ enum EventKinds {
+public enum EventKinds {
     EK_0(0),
     EK_1(1),
     EK_2(2),

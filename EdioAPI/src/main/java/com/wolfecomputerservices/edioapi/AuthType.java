@@ -13,7 +13,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-/* internal */ enum AuthType {
+public enum AuthType {
     AT_LOGON,
     AT_LOGOFF
 }
