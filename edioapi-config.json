@@ -1,36 +1,16 @@
 {
-    edio: {
-        credentials: {
-            user: "",
-            pass: ""
+    "edio": {
+        "credentials": {
+            "user": "",
+            "pass": ""
         }
     },
-    output: {
-        children: [],           
-        overdue: true,
-        school: true,
-        upcoming: true,
-        events: true,
-        ical_mailer: false,
-        upcoming_parms: {
-            days: 14
-        },
-        events_parms: {
-            date: ""
-        },
-        ical_mailer_parms: {
-            date: "",
-            from: "",
-            to: "",
-            smtp: {
-                ssl: false,
-                host: "",
-                port: 587,
-                credentials: {
-                    user: "",
-                    pass: ""
-                }
-            }
-        }
+    "output: {
+        "students": [],           
+        "overdue": true,
+        "school": true,
+        "upcoming": true,
+        "events": true,
+        "upcoming_days": 14
     }
 }
