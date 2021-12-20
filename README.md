@@ -26,26 +26,21 @@ The config file's contents are as follows:
 
 ```json
   {
-    "output":{
-      "overdue":true,   /* true to retrieve overdue items, false otherwise */
-      "students":[
-        /* list of student's names you want to retrieve. Leave empty to retrieve all. */
-      ],
-      "school":true,    /* true to retrieve if the student has school today, false otherwise */
-      "events_parms":{
-        "date":""       /* date to retrieve events for or blank for today. */
-      },
-      "upcoming":true,  /* true to retrieve upcoming quizes, tests and due items, false otherwise */
-      "events":true,    /* true to retrieve todays events, false otherwise */
-      "upcoming_parms":{
-        "days":14       /* how many days worth of upcoming events to retrieve */
-      }
-    },
     "edio":{
       "credentials":{ /* credentials used to log into the edio system as assigned by CCA */
         "pass":"",    /* coach's password */
         "user":""     /* coach's userid */
       }
+    },
+    "output":{
+      "overdue":true,   /* true to retrieve overdue items, false otherwise */
+      "students":[
+        /* list of student's names you want to retrieve. Leave empty to retrieve all. */
+      ],
+      "school":true,      /* true to retrieve if the student has school today, false otherwise */
+      "upcoming":true,    /* true to retrieve upcoming quizes, tests and due items, false otherwise */
+      "events":true,      /* true to retrieve todays events, false otherwise */
+      "upcoming_days":14  /* how many days worth of upcoming events to retrieve */
     }
   }
 ```
@@ -54,48 +49,52 @@ If using the cli, the output is a JSON string similiar to the following:
 
 ```json
   {
-    "school":true,
-    "students":[
+    "setup_required":false,   /* if true, the configuration file (see above) is incorrect */
+    "school":true,            /* true|false */ if students have school today */
+    "students":[              /* list of enrolled students */
       {
-        "overdues":[],
-        "name":"Bob",
-        "id":134656,
-        "upcoming":[
+        "id":99999,
+        "name":"Billy Bob Smith",
+        "overdues":[],      /* list of overdue quizz(es), test(s) and due assignments */
+        "events":[],        /* list of non-class related events in the next x (as defined by configuration file output.upcoming_days parameter) days.
+        "upcomings":[
           {
-            "date":"2012-01-10T00:00:00-05:00",
-            "course":"Science",
-            "topic":"Quiz: Interactions of Forces and Mass"},
-          {
-            "date":"2012-01-13T00:00:00-05:00",
-            "course":"Math",
-            "topic":"Independent Practice and Quiz"
-          },
-          {
-            "date":"2012-01-14T00:00:00-05:00",
-            "course":"History",
-            "topic":"Chapter 5 Section 1 Quiz"
-          },
-          {
-            "date":"2012-01-15T00:00:00-05:00",
-            "course":"English Language Arts",
-            "topic":"Act II Quiz"
-          },
-          {
-            "date":"2012-01-16T00:00:00-05:00",
-            "course":"English Language Arts",
-            "topic":"Researching the Holocaust: Body Paragraphs Due"
-          },
-          {
-            "date":"2012-01-20T00:00:00-05:00",
+            "date":{
+              "iso":"2019-12-20",
+              "year":2019,
+              "month":12,
+              "day":20
+            },
             "course":"English Language Arts",
             "topic":"Researching the Holocaust: Creating Citations and Conclusion Due"
+          },
+          {
+            "date":{
+              "iso":"2019-12-21",
+              "year":2019,
+              "month":12,
+              "day":21
+            },
+            "course":"Math",
+            "topic":"END OF UNIT TEST"
+          },
+          {
+            "date":{
+              "iso":"2020-01-04",
+              "year":2020,
+              "month":1,
+              "day":4
+            },
+            "course":"History",
+            "topic":"Section 3 Quiz"
           }
         ]
-        "events":[]
       }
     ],
-  "errors":[]
-}
+    "events":[],
+    "errors":[]
+  }
+
 ```
 
 Ideas for future enhancement:
