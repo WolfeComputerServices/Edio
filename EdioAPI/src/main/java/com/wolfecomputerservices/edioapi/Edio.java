@@ -172,7 +172,7 @@ public class Edio implements AutoCloseable {
             default:
                 try {
                     return Transformers
-                            .getMapValueAsValues(edioAPI.getDayEvents(Integer.MIN_VALUE, dateToUse), "resultObject")
+                            .getMapValueAsArrayList(edioAPI.getDayEvents(Integer.MIN_VALUE, dateToUse), "resultObject")
                             .stream()
                             .filter(s -> Transformers.getMapValueAsString((Map<String, Object>) s, "description")
                                     .toLowerCase().contains("no school "))

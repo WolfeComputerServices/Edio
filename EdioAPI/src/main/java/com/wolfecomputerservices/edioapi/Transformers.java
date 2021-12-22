@@ -63,12 +63,6 @@ public class Transformers {
         return r instanceof String ? (String) r : "";
     }
 
-    public static ArrayList<Object> getMapValueAsArray(Map<String, Object> map, String valueName) {
-        @Nullable
-        Object r = getMapValueAs(map, valueName);
-        return r instanceof ArrayList ? (ArrayList<Object>) r : new ArrayList<>();
-    }
-
     public static ArrayList<Object> getMapValueAsArrayList(Map<String, Object> map, String valueName) {
         @Nullable
         Object r = getMapValueAs(map, valueName);
