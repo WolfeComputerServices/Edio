@@ -92,9 +92,15 @@ public class Transformers {
     }
 
     public static int[] getStudentIds(Map<String, Object> map) {
-        return getMapValueAsArrayList(getMapValueAsMap(map, "resultObject"), "primaryUserRoleRelationships").stream()
+        return Transformers
+                .getMapValueAsArrayList(getMapValueAsMap(map, "resultObject"), "primaryUserRoleRelationships")
+                .stream().map(s -> (Map<String, Object>) s).map(s -> getMapValueAsMap(s, "secondaryUser"))
+                .mapToInt(s -> Transformers.getMapValueAsInt(s, "id"))
+                .toArray();
+/*        return getMapValueAsArrayList(getMapValueAsMap(map, "resultObject"), "primaryUserRoleRelationships").stream()
                 .map(s -> (Map<String, Object>) s).map(s -> Transformers.getMapValueAsMap(s, "secondaryUser"))
                 .mapToInt(s -> getMapValueAsInt(toMapValueMap(s), "id")).toArray();
+*/
     }
     
     public static String toCamelCase(String value) {

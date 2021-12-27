@@ -189,7 +189,7 @@ public final class EdioAPI implements AutoCloseable {
 
         return true;
     }
-
+    
     /**
      * Gets the user id of the coach
      *
@@ -262,6 +262,10 @@ public final class EdioAPI implements AutoCloseable {
         return new HashMap<>(0);
     }
 
+    public Map<String, Object> getDayEvents(LocalDate date) 
+            throws IOException, InterruptedException {
+        return getDayEvents(getAccountUserId(), date);
+    }
     public Map<String, Object> getDayEvents(final int studentId, LocalDate date)
             throws IOException, InterruptedException {
         return getDayEvents(studentId, date, new EventKinds[] { EventKinds.EK_0, EventKinds.EK_1, EventKinds.EK_3,
@@ -304,11 +308,24 @@ public final class EdioAPI implements AutoCloseable {
     private Map<String, Object> getDayEvents(final int aStudentId, LocalDate date, EventKinds[] kinds)
             throws IOException, InterruptedException {
 
-        int[] studentIds = Transformers.getStudentIds(getStudents());
+        /* We don't need a "default" student id. we can just use the account
+           holders userId.
+        int[] studentIds = new int[]{aStudentId};
+        if (aStudentId == Integer.MIN_VALUE) {
+            int retries = 3;
+            while (retries > 0) {
+                studentIds = Transformers.getStudentIds(getStudents());
+                if (studentIds.length > 0)
+                    break;
+                logger.fine(String.format("No students found: retries left: %d", retries));
+                retries--;
+            }
+        }
         if (studentIds.length == 0) {
             logger.warning("No students found");
         } else {
-            final int studentId = aStudentId == Integer.MIN_VALUE ? studentIds[0] : aStudentId;
+        */
+            final int studentId = aStudentId == Integer.MIN_VALUE ? getAccountUserId() : aStudentId;//studentIds[0] : aStudentId;
             final ZonedDateTime startTime = date.atStartOfDay().atZone(ZoneId.systemDefault())
                     .withZoneSameInstant(ZoneId.of("UTC"));
             final ZonedDateTime endTime = startTime.plusDays(1).minusSeconds(1);
@@ -337,7 +354,7 @@ public final class EdioAPI implements AutoCloseable {
                         throw new IOException("HTTP Code: " + response.statusCode());
                 }
             }
-        }
+//        }
         return new HashMap<>();
     }
 
