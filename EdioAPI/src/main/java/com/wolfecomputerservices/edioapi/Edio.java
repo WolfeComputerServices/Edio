@@ -106,7 +106,7 @@ public class Edio implements AutoCloseable {
      * @return JSONArray containing 0...n items
      */
     public Overdue[] getOverdues(String studentName) {
-        return Arrays.stream(executor(false, false, true, false).students)
+        return Arrays.stream(executor(false, true, false, false).students)
                 .filter(student -> student.getName().equalsIgnoreCase(studentName)).findFirst()
                 .map(student -> student.getOverdues()).orElse(new Overdue[0]);
     }
@@ -252,9 +252,10 @@ public class Edio implements AutoCloseable {
                         .map((u) -> new Overdue(
                                 Transformers.getMapValueAsString((Map<String, Object>) u, "scheduledDate"),
                                 Transformers.getMapValueAsString(Transformers.getMapValueAsMap(
-                                        Transformers.getMapValueAsMap((Map<String, Object>) u, "day"), "course"),
-                                        "name"),
-                                Transformers.getMapValueAsString((Map<String, Object>) u, "name")))
+                                        Transformers.getMapValueAsMap((Map<String, Object>) u, "day"), 
+                                        "course"), "name"),
+                                Transformers.getMapValueAsString(Transformers.getMapValueAsMap((Map<String, Object>) u, 
+                                        "day"), "name")))
                         .sorted((s1, s2) -> s1.dueDate.compareTo(s2.dueDate)).collect(Collectors.toList());
             }
 
