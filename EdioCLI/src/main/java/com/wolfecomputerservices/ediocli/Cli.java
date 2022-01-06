@@ -5,6 +5,7 @@
 
 package com.wolfecomputerservices.ediocli;
 
+import com.google.gson.Gson;
 import com.wolfecomputerservices.edioapi.Edio;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -23,6 +24,7 @@ public class Cli {
         else {
             //Gson gson = new Gson();
             try (Edio edio = new Edio(Paths.get(args[0]))) {
+                System.out.println(new Gson().toJson(edio.getOverdues("Brandon Christopher Wolfe")));
                 System.out.println(edio.executor().toJson());
             } catch (IOException ex) {
                 Logger.getLogger(Cli.class.getName()).log(Level.SEVERE, null, ex);
