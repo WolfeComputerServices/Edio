@@ -24,6 +24,7 @@ public class Cli {
         else {
             //Gson gson = new Gson();
             try (Edio edio = new Edio(Paths.get(args[0]))) {
+                System.out.println("Has school today: " + edio.hasSchoolToday());
                 System.out.println(new Gson().toJson(edio.getOverdues("Brandon Christopher Wolfe")));
                 System.out.println(edio.executor().toJson());
             } catch (IOException ex) {

@@ -6,7 +6,7 @@
         }
     },
     output: {
-        children: [],           
+        students: [],           
         overdue: true,
         school: true,
         upcoming: true,
@@ -14,23 +14,6 @@
         ical_mailer: false,
         upcoming_parms: {
             days: 14
-        },
-        events_parms: {
-            date: ""
-        },
-        ical_mailer_parms: {
-            date: "",
-            from: "",
-            to: "",
-            smtp: {
-                ssl: false,
-                host: "",
-                port: 587,
-                credentials: {
-                    user: "",
-                    pass: ""
-                }
-            }
         }
     }
 }
